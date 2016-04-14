@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Simone\Documents\GitHub\CG\CG_UFPel\CMakeFiles\94e438fa0b566f97366a52a10b680026\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{EBE5562C-BD75-3BA1-BE95-B815FBD77BF3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
