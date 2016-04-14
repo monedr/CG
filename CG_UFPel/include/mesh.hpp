@@ -24,7 +24,7 @@ using namespace glm;
 
 class mesh
 {
-	
+
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
 	std::vector<glm::vec3> normals;
@@ -41,11 +41,16 @@ class mesh
 
 public:
 	mesh(const char * path);
+
+	void mesh::loadToGPU();
+	void mesh::unloadFromGPU();
+
 	std::vector<unsigned short> getIndices();
 	GLuint* getVertexbuffer();
 	GLuint* getUvbuffer();
 	GLuint* getNormalbuffer();
 	GLuint* getElementbuffer();
+
 	void mesh::clearbuffer();
 	~mesh();
 };
