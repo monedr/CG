@@ -5,8 +5,6 @@
 modelManager::modelManager(const char * vertexshader, const char * fragmentshader,const char * texture,const char * myTextureSampler, const char * objPath )
 {
 
-	meshVector(objPath);
-	modelVector(programID, texture, myTextureSampler, meshVector.size());
 	// Create and compile our GLSL program from the shaders
 	// LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
 	programID = LoadShaders(vertexshader, fragmentshader);
@@ -24,13 +22,9 @@ modelManager::modelManager(const char * vertexshader, const char * fragmentshade
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
 
-	// Compute the MVP matrix from keyboard and mouse input
-	computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
-	glm::mat4 ProjectionMatrix = getProjectionMatrix();
-	glm::mat4 ViewMatrix       = getViewMatrix();
-
-	glm::mat4 MVP              = ProjectionMatrix * ViewMatrix * ModelMatrix;
-
+	meshVector(objPath);
+	modelVector(programID, texture, myTextureSampler, meshVector.size());
+	
 }
 
 GLunint modelManager::getProgramID(){

@@ -7,7 +7,6 @@
 model::model( GLuint programID, const char * texture,  const char * myTextureSampler, GLuint meshID){
 
 	meshIndex = meshID;
-	
 	ModelMatrixID = glGetUniformLocation(programID, "M");
 
 	// Load the texture
@@ -16,7 +15,6 @@ model::model( GLuint programID, const char * texture,  const char * myTextureSam
 
 	// Get a handle for our "myTextureSampler" uniform
 	TextureID = glGetUniformLocation(programID, myTextureSampler);
-	TextureID = glGetUniformLocation(programID, texture);
 
 	// Bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
