@@ -21,12 +21,19 @@ class model
 {
 	GLuint meshIndex;
 	GLuint ModelMatrixID;
+	glm::mat4 ModelMatrix;
 	GLuint Texture;
 	GLuint TextureID;
-	GLuint programID;
 public:
-	model(const char * vertexshader, const char * fragmentshader, const char * texture);
-	void model::clearbuffer();
+	//programID loads the shader
+	model( GLuint programID, const char * texture);
+	glm::mat4 model::getModelMatrix();
+	GLunint model::getModelMatrixID();
+	GLunint model::getTexture();
+	GLunint model::getTextureID();
+	GLunint model::getMeshIndex();S
+	//void model::clearbuffer();
+
 	~model();
 };
 

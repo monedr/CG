@@ -2,8 +2,9 @@
 
 
 
-mesh::mesh(const char * path){
+mesh::mesh(const char * path, int id){
 
+	id=id;
 	// Read our .obj file
 	bool res = loadOBJ(path, vertices, uvs, normals);
 
@@ -80,7 +81,7 @@ void mesh::unloadFromGPU(){
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
-	
+
 }
 
 std::vector<unsigned short> mesh::getIndices()
@@ -103,15 +104,12 @@ GLuint* mesh::getNormalbuffer() {
 GLuint* mesh::getElementbuffer() {
 	return &elementbuffer;
 }
-void mesh::clearbuffer() {
 
-	// Cleanup VBO and shader
+mesh::~mesh(){
+	// Cleanup VBO
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &uvbuffer);
 	glDeleteBuffers(1, &normalbuffer);
 	glDeleteBuffers(1, &elementbuffer);
-}
-mesh::~mesh()
-{
 }
 //&test::get_pc

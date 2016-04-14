@@ -2,19 +2,25 @@
 
 
 
-modelMenager::modelMenager()
+modelManager::modelManager(const char * vertexshader, const char * fragmentshader,const char * texture,const char * myTextureSampler, const char * objPath )
 {
-	// matrix settings
-	GLuint VertexArrayID;
+
+	meshVector(objPath);
+	modelVector(programID, texture, myTextureSampler, meshVector.size());
+	// Create and compile our GLSL program from the shaders
+	// LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
+	programID = LoadShaders(vertexshader, fragmentshader);
 
 	// Get a handle for our "MVP" uniform
-	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-	GLuint ViewMatrixID = glGetUniformLocation(programID, "V");
+	MatrixID = glGetUniformLocation(programID, "MVP");
+	ViewMatrixID = glGetUniformLocation(programID, "V");
 
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
-	glDeleteVertexArrays(1, &VertexArrayID);
-	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+	// Compute the MVP matrix from keyboard and mouse input
+	//computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
+	ProjectionMatrix = getProjectionMatrix();
+	ViewMatrix = getViewMatrix();
+
+	MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
 
@@ -22,12 +28,18 @@ modelMenager::modelMenager()
 	computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
 	glm::mat4 ProjectionMatrix = getProjectionMatrix();
 	glm::mat4 ViewMatrix       = getViewMatrix();
-	glm::mat4 ModelMatrix      = glm::mat4(1.0);
+
 	glm::mat4 MVP              = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
 }
 
+GLunint modelManager::getProgramID(){
+		return programID;
+}
+modelManager::~modelManager(
+	glDeleteProgram(programID);
 
-modelMenager::~modelMenager()
+glDeleteVertexArrays(1, &VertexArrayID);
+)
 {
 }

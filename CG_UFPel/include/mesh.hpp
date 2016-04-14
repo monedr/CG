@@ -25,6 +25,8 @@ using namespace glm;
 class mesh
 {
 
+	static int id;
+
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec2> uvs;
 	std::vector<glm::vec3> normals;
@@ -51,7 +53,6 @@ public:
 	GLuint* getNormalbuffer();
 	GLuint* getElementbuffer();
 
-	void mesh::clearbuffer();
 	~mesh();
 };
 
