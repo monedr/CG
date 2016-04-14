@@ -42,7 +42,7 @@ class mesh
 	GLuint elementbuffer;
 
 public:
-	mesh(const char * path);
+	mesh::mesh(const char * path);
 
 	void mesh::loadToGPU();
 	void mesh::unloadFromGPU();

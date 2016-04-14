@@ -1,5 +1,5 @@
 #include "model.hpp"
-
+#include <shader.hpp>
 
 //programID loads the shader
 //texture loads the texture as each obj has it's own
@@ -36,19 +36,19 @@ glm::mat4 model::getModelMatrix(){
 		return ModelMatrix;
 }
 
-GLunint model::getModelMatrixID(){
+GLuint model::getModelMatrixID(){
 		return ModelMatrixID;
 }
 
-GLunint model::getTexture(){
+GLuint model::getTexture(){
 		return Texture;
 }
 
-GLunint model::getTextureID(){
+GLuint model::getTextureID(){
 		return TextureID;
 }
 
-GLunint model::getMeshIndex(){}
+GLuint model::getMeshIndex(){}
 
 model::~model(){
 	   glDeleteTextures(1, &Texture);

@@ -21,6 +21,7 @@ using namespace glm;
 #include <controls.hpp>
 
 
+
 class modelManager{
 
 	// matrix settings
@@ -28,6 +29,8 @@ class modelManager{
 	// Get a handle for our "MVP" uniform
 	GLuint MatrixID;
 	GLuint ViewMatrixID;
+	GLuint programID;
+
 	// Compute the MVP matrix from keyboard and mouse input
 	//computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
 	glm::mat4 ProjectionMatrix;
@@ -35,10 +38,10 @@ class modelManager{
 	glm::mat4 MVP;
 
 	std::vector<mesh> meshVector;
-	std::std::vector<model> modelVector;
+	std::vector<model> modelVector;
 
 public:
-		GLunint model::getProgramID();
-	modelManager();
+	GLuint modelManager::getProgramID();
+	modelManager::modelManager(const char * vertexshader, const char * fragmentshader, const char * texture, const char * myTextureSampler, const char * objPath);
 	~modelManager();
 };

@@ -25,6 +25,9 @@ add_executable(CG_UFPel
     sources/texture.cpp
     sources/vboindexer.cpp
     sources/glerror.cpp
+	sources/mesh.cpp
+	sources/model.cpp
+	sources/modelManager.cpp
 
     include/controls.hpp    
     include/objloader.hpp
@@ -35,6 +38,9 @@ add_executable(CG_UFPel
     include/texture.hpp
     include/vboindexer.hpp
     include/glerror.hpp
+	include/mesh.hpp
+	include/model.hpp
+	include/modelManager.hpp
 )
 
 include_directories(

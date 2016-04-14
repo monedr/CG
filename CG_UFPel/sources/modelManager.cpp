@@ -2,8 +2,10 @@
 
 
 
-modelManager::modelManager(const char * vertexshader, const char * fragmentshader,const char * texture,const char * myTextureSampler, const char * objPath )
+modelManager::modelManager(const char * vertexshader, const char * fragmentshader, const char * texture, const char * myTextureSampler, const char * objPath )
 {
+	meshVector.push_back(objPath);
+	modelVector.push_back(programID, texture, myTextureSampler, meshVector.size());
 
 	// Create and compile our GLSL program from the shaders
 	// LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
@@ -18,22 +20,19 @@ modelManager::modelManager(const char * vertexshader, const char * fragmentshade
 	ProjectionMatrix = getProjectionMatrix();
 	ViewMatrix = getViewMatrix();
 
-	MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+	MVP = ProjectionMatrix * ViewMatrix * modelVector.ModelMatrix;
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-
-	meshVector(objPath);
-	modelVector(programID, texture, myTextureSampler, meshVector.size());
+	*/
 	
 }
 
-GLunint modelManager::getProgramID(){
+GLuint modelManager::getProgramID(){
 		return programID;
 }
-modelManager::~modelManager(
+modelManager::~modelManager() {
+
 	glDeleteProgram(programID);
 
-glDeleteVertexArrays(1, &VertexArrayID);
-)
-{
 }
+

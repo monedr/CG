@@ -6,6 +6,10 @@
 #include <stdlib.h>
 #include <vector>
 
+// Include GLEW
+#include <GL/glew.h>
+
+
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,6 +17,7 @@ using namespace glm;
 
 #include <shader.hpp>
 #include <texture.hpp>
+#include <controls.hpp>
 
 #ifndef MODEL_H
 #define MODEL_H
@@ -26,12 +31,12 @@ class model
 	GLuint TextureID;
 public:
 	//programID loads the shader
-	model( GLuint programID, const char * texture);
+	model::model(GLuint programID, const char * texture, const char * myTextureSampler, GLuint meshID);
 	glm::mat4 model::getModelMatrix();
-	GLunint model::getModelMatrixID();
-	GLunint model::getTexture();
-	GLunint model::getTextureID();
-	GLunint model::getMeshIndex();S
+	GLuint model::getModelMatrixID();
+	GLuint model::getTexture();
+	GLuint model::getTextureID();
+	GLuint model::getMeshIndex();
 	//void model::clearbuffer();
 
 	~model();

@@ -1,10 +1,25 @@
 #include "mesh.hpp"
+// Include standard headers
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+
+// Include GLM
+#include <glm/glm.hpp>
+using namespace glm;
+
+#include <shader.hpp>
+#include <texture.hpp>
+#include <controls.hpp>
+#include <objloader.hpp>
+#include <vboindexer.hpp>
+#include <glerror.hpp>
 
 
+mesh::mesh(const char * path){
 
-mesh::mesh(const char * path, int id){
 
-	id=id;
+	//id=id;
 	// Read our .obj file
 	bool res = loadOBJ(path, vertices, uvs, normals);
 
@@ -112,4 +127,4 @@ mesh::~mesh(){
 	glDeleteBuffers(1, &normalbuffer);
 	glDeleteBuffers(1, &elementbuffer);
 }
-//&test::get_pc
+
