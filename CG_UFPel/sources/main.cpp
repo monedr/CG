@@ -27,7 +27,7 @@ using namespace glm;
 #include <vboindexer.hpp>
 #include <glerror.hpp>
 
-// my classes 
+// my classes
 #include <mesh.hpp>
 #include <model.hpp>
 
@@ -41,8 +41,6 @@ void WindowSizeCallBack(GLFWwindow *pWindow, int nWidth, int nHeight) {
 
 int main(void)
 {
-	// GUI settings
-
 	int nUseMouse = 1;
 
 	// Initialise GLFW
@@ -146,24 +144,9 @@ int main(void)
 		// Use our shader
 		glUseProgram(programID);
 
-		// Compute the MVP matrix from keyboard and mouse input
-		computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
-		glm::mat4 ProjectionMatrix = getProjectionMatrix();
-		glm::mat4 ViewMatrix       = getViewMatrix();
-		glm::mat4 ModelMatrix      = glm::mat4(1.0);
-		glm::mat4 MVP              = ProjectionMatrix * ViewMatrix * ModelMatrix;
-
-
 		glm::vec3 lightPos = glm::vec3(4, 4, 4);
 		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
-		
-/*		
-		
-
-		// Index buffer
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *myMesh.getElementbuffer);
-		*/
 		// Draw the triangles !
 		glDrawElements(
 			GL_TRIANGLES,        // mode
@@ -171,10 +154,6 @@ int main(void)
 			GL_UNSIGNED_SHORT,   // type
 			(void*)0             // element array buffer offset
 			);
-
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
 
 		// Draw tweak bars
 		TwDraw();
@@ -194,4 +173,3 @@ int main(void)
 
 	return 0;
 }
-
