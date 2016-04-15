@@ -110,8 +110,11 @@ int main(void)
 
 	// Cull triangles which normal is not towards the camera
 	glEnable(GL_CULL_FACE);
-	modelManager myModelManager("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader", "mesh/uvmap.DDS", "myTextureSampler", "mesh/suzanne.obj");
 	
+	modelManager myModelManager("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
+	myModelManager.loadMesh("mesh/suzanne.obj");
+	myModelManager.creatModel( "mesh/uvmap.DDS", "myTextureSampler");
+
 	// Get a handle for our "LightPosition" uniform
 
 	GLuint LightID = glGetUniformLocation(myModelManager.getProgramID(), "LightPosition_worldspace");
@@ -125,10 +128,10 @@ int main(void)
         check_gl_error();
 
         //use the control key to free the mouse
-		if (glfwGetKey(g_pWindow, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS)
-			nUseMouse = 1;
-		else
-			nUseMouse = 0;
+		//if (glfwGetKey(g_pWindow, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS)
+		//	nUseMouse = 1;
+		//else
+			//nUseMouse = 0;
 
 		// Measure speed
 		double currentTime = glfwGetTime();
@@ -147,7 +150,14 @@ int main(void)
 		glm::vec3 lightPos = glm::vec3(4, 4, 4);
 		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
-		myModelManager.drawModels();
+		// Use our shader
+		glUseProgram(myModelManager.getProgramID());
+
+		// Compute the MVP matrix from keyboard and mouse input
+		computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
+		myModelManager.calcMVP(myModelManager.modelVector[0]);
+		myModelManager.setMatrixToGPU(myModelManager.modelVector[0]);
+		myModelManager.drawModels(myModelManager.meshVector[0]);
 
 		// Draw tweak bars
 		TwDraw();

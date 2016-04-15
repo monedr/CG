@@ -1,35 +1,43 @@
 #include "modelManager.hpp"
+#include <shader.hpp>
+#include <controls.hpp>
 
 
-
-modelManager::modelManager(const char * vertexshader, const char * fragmentshader, const char * texture, const char * myTextureSampler, const char * objPath )
+modelManager::modelManager(char * vertexshader, char * fragmentshader)
 {
-	//carrega a malha no vetor de malhas
-	mesh auxMesh(objPath);
-	meshVector.push_back(auxMesh);
-
 	// Create and compile our GLSL program from the shaders
 	// LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
 	programID = LoadShaders(vertexshader, fragmentshader);
-
-	//cria um modelo o associa a uma malha e o insere no vetor de modelos
-	model auxModel(programID, texture, myTextureSampler, meshVector.size() - 1);
-	modelVector.push_back(auxModel);
 
 	// Get a handle for our "MVP" uniform
 	MatrixID = glGetUniformLocation(programID, "MVP");
 	ViewMatrixID = glGetUniformLocation(programID, "V");
 
+}
+void modelManager::loadMesh(char * path) {
+
+	//carrega a malha no vetor de malhas
+	mesh mesh(path);
+	meshVector.push_back(mesh);
+}
+void modelManager::creatModel( char* texture, char* myTextureSampler) {
+	model auxModel(programID, "mesh/uvmap.DDS", "myTextureSampler", meshVector.size() - 1);
+	modelVector.push_back(auxModel);
+}
+
+void modelManager::calcMVP(model model) {
+
 	// Compute the MVP matrix from keyboard and mouse input
-	//computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
 	ProjectionMatrix = getProjectionMatrix();
 	ViewMatrix = getViewMatrix();
-	ModelMatrix = modelVector[0].getModelMatrix();
-	MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+	MVP = ProjectionMatrix * ViewMatrix * model.getModelMatrix();
+}
+
+void modelManager::setMatrixToGPU(model model) {
+
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(model.getModelMatrixID(), 1, GL_FALSE, &model.getModelMatrix()[0][0]);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-	
-	
 }
 
 GLuint modelManager::getProgramID(){
@@ -38,16 +46,14 @@ GLuint modelManager::getProgramID(){
 
 //void modelManager::
 
-void modelManager::drawModels() {
-	GLuint m;
-	m = modelVector[0].getMeshIndex();
-	//std::vector<unsigned short> indices;
-	printf("tamanho de indices: % d\n", meshVector[m].getIndices().size());
-	//meshVector[m].getIndices().size()indices.size()
+void modelManager::drawModels(mesh mesh) {
+
+	printf("tamanho de indices: % d\n", mesh.getIndices().size());
+
 	// Draw the triangles !
 	glDrawElements(
 		GL_TRIANGLES,        // mode
-		meshVector[m].getIndices().size(), // count
+		mesh.getIndices().size(), // count
 		GL_UNSIGNED_SHORT,   // type
 		(void*)0             // element array buffer offset
 	);
@@ -56,7 +62,7 @@ void modelManager::drawModels() {
 modelManager::modelManager(){}
 modelManager::~modelManager() {
 
-	glDeleteProgram(programID);
+	//glDeleteProgram(programID);
 
 }
 

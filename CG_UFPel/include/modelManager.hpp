@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 
 #include <model.hpp>
 #include <mesh.hpp>
@@ -38,14 +38,20 @@ class modelManager{
 	glm::mat4 MVP;
 	glm::mat4 ModelMatrix;
 
-	std::vector<mesh> meshVector;
-	std::vector<model> modelVector;
+
 
 public:
 
+	std::vector<mesh> meshVector;
+	std::vector<model> modelVector;
+
+	void modelManager::creatModel( char* texture, char* myTextureSampler);
+	void modelManager::loadMesh(char * path);
+	void modelManager::calcMVP(model model);
+	void modelManager::setMatrixToGPU(model model);
 	GLuint modelManager::getProgramID();
-	modelManager::modelManager(const char * vertexshader, const char * fragmentshader, const char * texture, const char * myTextureSampler, const char * objPath);
-	void modelManager::drawModels();
+	modelManager::modelManager(char * vertexshader, char * fragmentshader);
+	void modelManager::drawModels(mesh mesh);
 	modelManager::modelManager();
 	~modelManager();
 };

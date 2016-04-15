@@ -6,7 +6,7 @@
 //meshID links the mesh to the model
 model::model( GLuint programID, const char * texture,  const char * myTextureSampler, GLuint meshID){
 
-	meshIndex = meshID;
+	model::meshIndex = meshID;
 	ModelMatrixID = glGetUniformLocation(programID, "M");
 
 	// Load the texture
@@ -19,7 +19,7 @@ model::model( GLuint programID, const char * texture,  const char * myTextureSam
 	ModelMatrix = glm::mat4(1.0);
 	// Send our transformation to the currently bound shader,
 	// in the "MVP" uniform
-	glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+	
 	
 	// Bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
@@ -61,7 +61,7 @@ GLuint model::getMeshIndex(){
 }
 
 model::~model(){
-	   glDeleteTextures(1, &Texture);
+	 //  glDeleteTextures(1, &Texture);
 }
 model::model() {
 }
