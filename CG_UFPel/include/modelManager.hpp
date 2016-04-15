@@ -36,6 +36,7 @@ class modelManager{
 	glm::mat4 ProjectionMatrix;
 	glm::mat4 ViewMatrix;
 	glm::mat4 MVP;
+	glm::mat4 ModelMatrix;
 
 	std::vector<mesh> meshVector;
 	std::vector<model> modelVector;

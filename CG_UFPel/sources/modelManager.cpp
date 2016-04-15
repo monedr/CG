@@ -4,8 +4,10 @@
 
 modelManager::modelManager(const char * vertexshader, const char * fragmentshader, const char * texture, const char * myTextureSampler, const char * objPath )
 {
-	meshVector.push_back(objPath);
-	modelVector.push_back(programID, texture, myTextureSampler, meshVector.size());
+	mesh auxMesh(objPath);
+	meshVector.push_back(auxMesh);
+	model auxModel(programID, texture, myTextureSampler, meshVector.size());
+	//modelVector.push_back(auxModel);
 
 	// Create and compile our GLSL program from the shaders
 	// LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
@@ -19,11 +21,11 @@ modelManager::modelManager(const char * vertexshader, const char * fragmentshade
 	//computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
 	ProjectionMatrix = getProjectionMatrix();
 	ViewMatrix = getViewMatrix();
-
-	MVP = ProjectionMatrix * ViewMatrix * modelVector.ModelMatrix;
+	ModelMatrix = auxModel.getModelMatrix;
+	MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-	*/
+	
 	
 }
 
