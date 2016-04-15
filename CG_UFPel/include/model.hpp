@@ -38,7 +38,7 @@ public:
 	GLuint model::getTextureID();
 	GLuint model::getMeshIndex();
 	//void model::clearbuffer();
-
+	model::model();
 	~model();
 };
 

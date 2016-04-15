@@ -4,14 +4,17 @@
 
 modelManager::modelManager(const char * vertexshader, const char * fragmentshader, const char * texture, const char * myTextureSampler, const char * objPath )
 {
+	//carrega a malha no vetor de malhas
 	mesh auxMesh(objPath);
 	meshVector.push_back(auxMesh);
-	model auxModel(programID, texture, myTextureSampler, meshVector.size());
-	//modelVector.push_back(auxModel);
 
 	// Create and compile our GLSL program from the shaders
 	// LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
 	programID = LoadShaders(vertexshader, fragmentshader);
+
+	//cria um modelo o associa a uma malha e o insere no vetor de modelos
+	model auxModel(programID, texture, myTextureSampler, meshVector.size() - 1);
+	modelVector.push_back(auxModel);
 
 	// Get a handle for our "MVP" uniform
 	MatrixID = glGetUniformLocation(programID, "MVP");
@@ -32,6 +35,19 @@ modelManager::modelManager(const char * vertexshader, const char * fragmentshade
 GLuint modelManager::getProgramID(){
 		return programID;
 }
+
+void modelManager::drawModels() {
+	int indice = 0;
+	// Draw the triangles !
+	glDrawElements(
+		GL_TRIANGLES,        // mode
+		meshVector[modelVector[indice].getMeshIndex],      // count
+		GL_UNSIGNED_SHORT,   // type
+		(void*)0             // element array buffer offset
+	);
+
+}
+
 modelManager::~modelManager() {
 
 	glDeleteProgram(programID);

@@ -48,8 +48,12 @@ GLuint model::getTextureID(){
 		return TextureID;
 }
 
-GLuint model::getMeshIndex(){}
+GLuint model::getMeshIndex(){
+	return meshIndex;
+}
 
 model::~model(){
 	   glDeleteTextures(1, &Texture);
+}
+model::model() {
 }
