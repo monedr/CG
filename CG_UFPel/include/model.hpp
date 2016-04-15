@@ -32,6 +32,10 @@ class model
 public:
 	//programID loads the shader
 	model::model(GLuint programID, const char * texture, const char * myTextureSampler, GLuint meshID);
+
+	void model::startTexture();
+	void model::setTransformation();
+
 	glm::mat4 model::getModelMatrix();
 	GLuint model::getModelMatrixID();
 	GLuint model::getTexture();

@@ -111,7 +111,7 @@ int main(void)
 	// Cull triangles which normal is not towards the camera
 	glEnable(GL_CULL_FACE);
 	modelManager myModelManager("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader", "mesh/uvmap.DDS", "myTextureSampler", "mesh/suzanne.obj");
-
+	
 	// Get a handle for our "LightPosition" uniform
 
 	GLuint LightID = glGetUniformLocation(myModelManager.getProgramID(), "LightPosition_worldspace");
@@ -121,6 +121,7 @@ int main(void)
 	int nbFrames    = 0;
 	
 	do{
+		
         check_gl_error();
 
         //use the control key to free the mouse
@@ -137,6 +138,7 @@ int main(void)
 			//printf("%f ms/frame\n", 1000.0 / double(nbFrames));
 			nbFrames  = 0;
 			lastTime += 1.0;
+			
 		}
 
 		// Clear the screen
