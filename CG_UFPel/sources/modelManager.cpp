@@ -24,7 +24,7 @@ modelManager::modelManager(const char * vertexshader, const char * fragmentshade
 	//computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
 	ProjectionMatrix = getProjectionMatrix();
 	ViewMatrix = getViewMatrix();
-	ModelMatrix = auxModel.getModelMatrix;
+	ModelMatrix = auxModel.getModelMatrix();
 	MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
@@ -37,17 +37,21 @@ GLuint modelManager::getProgramID(){
 }
 
 void modelManager::drawModels() {
-	int indice = 0;
+	GLuint m;
+	m = modelVector[0].getMeshIndex();
+	std::vector<unsigned short> indices;
+	printf("tamanho de indices: % d\n", indices.size());
+	//meshVector[m].getIndices().size()
 	// Draw the triangles !
 	glDrawElements(
 		GL_TRIANGLES,        // mode
-		meshVector[modelVector[indice].getMeshIndex],      // count
+		indices.size(), // count
 		GL_UNSIGNED_SHORT,   // type
 		(void*)0             // element array buffer offset
 	);
 
 }
-
+modelManager::modelManager(){}
 modelManager::~modelManager() {
 
 	glDeleteProgram(programID);

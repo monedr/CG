@@ -110,17 +110,16 @@ int main(void)
 
 	// Cull triangles which normal is not towards the camera
 	glEnable(GL_CULL_FACE);
-
 	modelManager myModelManager("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader", "mesh/uvmap.DDS", "myTextureSampler", "mesh/suzanne.obj");
 
 	// Get a handle for our "LightPosition" uniform
 
-	GLuint LightID = glGetUniformLocation(myModelManager.getProgramID, "LightPosition_worldspace");
+	GLuint LightID = glGetUniformLocation(myModelManager.getProgramID(), "LightPosition_worldspace");
 
 	// For speed computation
-	double lastTime = glfwGetTime();
+	double lastTime = glfwGetTime(); 
 	int nbFrames    = 0;
-
+	
 	do{
         check_gl_error();
 
@@ -135,7 +134,7 @@ int main(void)
 		nbFrames++;
 		if (currentTime - lastTime >= 1.0){ // If last prinf() was more than 1sec ago
 			// printf and reset
-			printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+			//printf("%f ms/frame\n", 1000.0 / double(nbFrames));
 			nbFrames  = 0;
 			lastTime += 1.0;
 		}
@@ -145,6 +144,8 @@ int main(void)
 
 		glm::vec3 lightPos = glm::vec3(4, 4, 4);
 		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
+
+		myModelManager.drawModels();
 
 		// Draw tweak bars
 		TwDraw();

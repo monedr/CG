@@ -45,5 +45,6 @@ public:
 	GLuint modelManager::getProgramID();
 	modelManager::modelManager(const char * vertexshader, const char * fragmentshader, const char * texture, const char * myTextureSampler, const char * objPath);
 	void modelManager::drawModels();
+	modelManager::modelManager()
 	~modelManager();
 };
