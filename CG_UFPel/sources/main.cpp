@@ -27,11 +27,6 @@ using namespace glm;
 #include <vboindexer.hpp>
 #include <glerror.hpp>
 
-//my include
-#include <mesh.hpp>
-#include <model.hpp>
-#include <modelManager.hpp>
-
 void WindowSizeCallBack(GLFWwindow *pWindow, int nWidth, int nHeight) {
 
 	g_nWidth = nWidth;
@@ -58,7 +53,7 @@ int main(void)
 
 	// Open a window and create its OpenGL context
 	g_pWindow = glfwCreateWindow(g_nWidth, g_nHeight, "CG UFPel", NULL, NULL);
-	if (g_pWindow == NULL){
+	if (g_pWindow == NULL) {
 		fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
 		glfwTerminate();
 		return -1;
@@ -75,7 +70,7 @@ int main(void)
 
 	check_gl_error();//OpenGL error from GLEW
 
-	// Initialize the GUI
+					 // Initialize the GUI
 	TwInit(TW_OPENGL_CORE, NULL);
 	TwWindowSize(g_nWidth, g_nHeight);
 
@@ -110,54 +105,165 @@ int main(void)
 
 	// Cull triangles which normal is not towards the camera
 	glEnable(GL_CULL_FACE);
-	
-	modelManager myModelManager("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
-	myModelManager.loadMesh("mesh/suzanne.obj");
-	myModelManager.creatModel( "mesh/uvmap.DDS", "myTextureSampler");
+
+	GLuint VertexArrayID;
+	glGenVertexArrays(1, &VertexArrayID);
+	glBindVertexArray(VertexArrayID);
+
+	// Create and compile our GLSL program from the shaders
+	GLuint programID = LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
+
+	// Get a handle for our "MVP" uniform
+	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+	GLuint ViewMatrixID = glGetUniformLocation(programID, "V");
+	GLuint ModelMatrixID = glGetUniformLocation(programID, "M");
+
+	// Load the texture
+	GLuint Texture = loadDDS("mesh/uvmap.DDS");
+
+	// Get a handle for our "myTextureSampler" uniform
+	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
+
+	// Read our .obj file
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> uvs;
+	std::vector<glm::vec3> normals;
+	bool res = loadOBJ("mesh/suzanne.obj", vertices, uvs, normals);
+
+	std::vector<unsigned short> indices;
+	std::vector<glm::vec3> indexed_vertices;
+	std::vector<glm::vec2> indexed_uvs;
+	std::vector<glm::vec3> indexed_normals;
+	indexVBO(vertices, uvs, normals, indices, indexed_vertices, indexed_uvs, indexed_normals);
+
+	// Load it into a VBO
+
+	GLuint vertexbuffer;
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, indexed_vertices.size() * sizeof(glm::vec3), &indexed_vertices[0], GL_STATIC_DRAW);
+
+	GLuint uvbuffer;
+	glGenBuffers(1, &uvbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+	glBufferData(GL_ARRAY_BUFFER, indexed_uvs.size() * sizeof(glm::vec2), &indexed_uvs[0], GL_STATIC_DRAW);
+
+	GLuint normalbuffer;
+	glGenBuffers(1, &normalbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+	glBufferData(GL_ARRAY_BUFFER, indexed_normals.size() * sizeof(glm::vec3), &indexed_normals[0], GL_STATIC_DRAW);
+
+	// Generate a buffer for the indices as well
+	GLuint elementbuffer;
+	glGenBuffers(1, &elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0], GL_STATIC_DRAW);
 
 	// Get a handle for our "LightPosition" uniform
-
-	GLuint LightID = glGetUniformLocation(myModelManager.getProgramID(), "LightPosition_worldspace");
+	glUseProgram(programID);
+	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
 	// For speed computation
-	double lastTime = glfwGetTime(); 
-	int nbFrames    = 0;
-	
-	do{
-		
-        check_gl_error();
+	double lastTime = glfwGetTime();
+	int nbFrames = 0;
 
-        //use the control key to free the mouse
-		//if (glfwGetKey(g_pWindow, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS)
-		//	nUseMouse = 1;
-		//else
-			//nUseMouse = 0;
+	do {
+		check_gl_error();
+
+		//use the control key to free the mouse
+		if (glfwGetKey(g_pWindow, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS)
+			nUseMouse = 1;
+		else
+			nUseMouse = 0;
 
 		// Measure speed
 		double currentTime = glfwGetTime();
 		nbFrames++;
-		if (currentTime - lastTime >= 1.0){ // If last prinf() was more than 1sec ago
-			// printf and reset
-			//printf("%f ms/frame\n", 1000.0 / double(nbFrames));
-			nbFrames  = 0;
+		if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1sec ago
+											 // printf and reset
+			printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+			nbFrames = 0;
 			lastTime += 1.0;
-			
 		}
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glm::vec3 lightPos = glm::vec3(4, 4, 4);
-		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
-
 		// Use our shader
-		glUseProgram(myModelManager.getProgramID());
+		glUseProgram(programID);
 
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
-		myModelManager.calcMVP(myModelManager.modelVector[0]);
-		myModelManager.setMatrixToGPU(myModelManager.modelVector[0]);
-		myModelManager.drawModels(myModelManager.meshVector[0]);
+		glm::mat4 ProjectionMatrix = getProjectionMatrix();
+		glm::mat4 ViewMatrix = getViewMatrix();
+		glm::mat4 ModelMatrix = glm::mat4(1.0);
+		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+
+		// Send our transformation to the currently bound shader,
+		// in the "MVP" uniform
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+
+		glm::vec3 lightPos = glm::vec3(4, 4, 4);
+		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
+
+		// Bind our texture in Texture Unit 0
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, Texture);
+		// Set our "myTextureSampler" sampler to user Texture Unit 0
+		glUniform1i(TextureID, 0);
+
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glVertexAttribPointer(
+			0,                  // attribute
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// 2nd attribute buffer : UVs
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+		glVertexAttribPointer(
+			1,                                // attribute
+			2,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+
+		// 3rd attribute buffer : normals
+		glEnableVertexAttribArray(2);
+		glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+		glVertexAttribPointer(
+			2,                                // attribute
+			3,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+
+		// Index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+
+		// Draw the triangles !
+		glDrawElements(
+			GL_TRIANGLES,        // mode
+			indices.size(),      // count
+			GL_UNSIGNED_SHORT,   // type
+			(void*)0             // element array buffer offset
+		);
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
 
 		// Draw tweak bars
 		TwDraw();
@@ -168,8 +274,16 @@ int main(void)
 
 	} // Check if the ESC key was pressed or the window was closed
 	while (glfwGetKey(g_pWindow, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-	glfwWindowShouldClose(g_pWindow) == 0);
+		glfwWindowShouldClose(g_pWindow) == 0);
 
+	// Cleanup VBO and shader
+	glDeleteBuffers(1, &vertexbuffer);
+	glDeleteBuffers(1, &uvbuffer);
+	glDeleteBuffers(1, &normalbuffer);
+	glDeleteBuffers(1, &elementbuffer);
+	glDeleteProgram(programID);
+	glDeleteTextures(1, &Texture);
+	glDeleteVertexArrays(1, &VertexArrayID);
 
 	// Terminate AntTweakBar and GLFW
 	TwTerminate();
