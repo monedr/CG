@@ -61,7 +61,7 @@ GLuint model::getMeshIndex(){
 }
 
 model::~model(){
-	 //  glDeleteTextures(1, &Texture);
+	  glDeleteTextures(1, &Texture);
 }
 model::model() {
 }
