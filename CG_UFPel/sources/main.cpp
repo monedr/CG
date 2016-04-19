@@ -30,6 +30,7 @@ using namespace glm;
 //my include
 #include <mesh.hpp>
 #include <model.hpp>
+#include <modelManager.hpp>
 
 void WindowSizeCallBack(GLFWwindow *pWindow, int nWidth, int nHeight) {
 
@@ -114,23 +115,13 @@ int main(void)
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
-	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
-
-	// Get a handle for our "MVP" uniform
-	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-	GLuint ViewMatrixID = glGetUniformLocation(programID, "V");
-	
-	
-
-
 	// Read our .obj file
-	mesh mymesh("mesh/suzanne.obj");
-	model mymodel(programID, "mesh/uvmap.DDS", "myTextureSampler", 0);
+	modelManager myModelManager("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
+	myModelManager.loadMesh("mesh/suzanne.obj");
+	myModelManager.creatModel("mesh/uvmap.DDS", "myTextureSampler");
+	myModelManager.setLightPosition("LightPosition_worldspace");
 
-	// Get a handle for our "LightPosition" uniform
-	glUseProgram(programID);
-	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
+
 
 	// For speed computation
 	double lastTime = glfwGetTime();
@@ -158,41 +149,24 @@ int main(void)
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Use our shader
-		glUseProgram(programID);
-
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
-		glm::mat4 ProjectionMatrix = getProjectionMatrix();
-		glm::mat4 ViewMatrix = getViewMatrix();
-		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * mymodel.getModelMatrix();
 
 		// Send our transformation to the currently bound shader,
 		// in the "MVP" uniform
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(mymodel.getModelMatrixID(), 1, GL_FALSE, &mymodel.getModelMatrix()[0][0]);
-		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+		//myModelManager.calcMVP(myModelManager.getMOdelVector()[0]);
+		//myModelManager.setMatrixToGPU(myModelManager.getMOdelVector()[0]);
 
 		glm::vec3 lightPos = glm::vec3(4, 4, 4);
-		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
+		glUniform3f(myModelManager.getLightID(), lightPos.x, lightPos.y, lightPos.z);
 
-		// Bind our texture in Texture Unit 0
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, mymodel.getTexture());
-		// Set our "myTextureSampler" sampler to user Texture Unit 0
-		glUniform1i(mymodel.getTextureID(), 0);
+		//myModelManager.getMOdelVector()[0].startTexture();
 
-		mymesh.loadToGPU();
+		//myModelManager.getMeshVector()[0].loadToGPU();
 		
-		// Draw the triangles !
-		glDrawElements(
-			GL_TRIANGLES,        // mode
-			mymesh.getIndices().size(),      // count
-			GL_UNSIGNED_SHORT,   // type
-			(void*)0             // element array buffer offset
-		);
+		//myModelManager.drawModels(myModelManager.getMeshVector()[0]);
 
-		mymesh.unloadFromGPU();
+		//myModelManager.getMeshVector()[0].unloadFromGPU();
 
 		// Draw tweak bars
 		TwDraw();
@@ -206,9 +180,10 @@ int main(void)
 		glfwWindowShouldClose(g_pWindow) == 0);
 
 	// Cleanup VBO and shader
-	mymesh.~mesh();
-	glDeleteProgram(programID);
-	mymodel.~model();
+	//myModelManager.getMeshVector()[0].~mesh();
+	//myModelManager.getMOdelVector()[0].~model();
+	//myModelManager.~modelManager();
+	
 	glDeleteVertexArrays(1, &VertexArrayID);
 
 	// Terminate AntTweakBar and GLFW

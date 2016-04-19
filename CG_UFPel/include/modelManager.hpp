@@ -25,33 +25,42 @@ using namespace glm;
 class modelManager{
 
 	// matrix settings
-	GLuint VertexArrayID;
 	// Get a handle for our "MVP" uniform
 	GLuint MatrixID;
 	GLuint ViewMatrixID;
 	GLuint programID;
+	GLuint LightID;
 
 	// Compute the MVP matrix from keyboard and mouse input
 	//computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
 	glm::mat4 ProjectionMatrix;
 	glm::mat4 ViewMatrix;
 	glm::mat4 MVP;
-	glm::mat4 ModelMatrix;
 
-
-
-public:
 
 	std::vector<mesh> meshVector;
 	std::vector<model> modelVector;
 
+
+public:
+
+	modelManager::modelManager(char * vertexshader, char * fragmentshader);
+	
 	void modelManager::creatModel( char* texture, char* myTextureSampler);
 	void modelManager::loadMesh(char * path);
 	void modelManager::calcMVP(model model);
 	void modelManager::setMatrixToGPU(model model);
-	GLuint modelManager::getProgramID();
-	modelManager::modelManager(char * vertexshader, char * fragmentshader);
+	void modelManager::setLightPosition(char * LightPosition_worldspace);
 	void modelManager::drawModels(mesh mesh);
-	modelManager::modelManager();
+
+	GLuint modelManager::getLightID();
+	GLuint modelManager::getProgramID();
+	GLuint modelManager::getMatrixID();
+	GLuint modelManager::getViewMatrixID();
+	std::vector<mesh> modelManager::getMeshVector();
+	std::vector<model> modelManager::getMOdelVector();
+	
+	
+
 	~modelManager();
 };

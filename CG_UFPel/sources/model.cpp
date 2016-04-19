@@ -20,19 +20,15 @@ model::model( GLuint programID, const char * texture,  const char * myTextureSam
 	// Send our transformation to the currently bound shader,
 	// in the "MVP" uniform
 	
-	
+}
+
+void model::startTexture() {
 	// Bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Texture);
 
 	// Set our "myTextureSampler" sampler to user Texture Unit 0
 	glUniform1i(TextureID, 0);
-  
-
-}
-
-void model::startTexture() {
-
 }
 
 void model::setTransformation() {
