@@ -126,15 +126,20 @@ int main(void)
 	// For speed computation
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;
-
+	//myModelManager.calcMVP(myModelManager.getMOdelVector()[0]);
+	myModelManager.setMatrixToGPU(myModelManager.getMOdelVector()[0]);
+	myModelManager.getMOdelVector()[0].startTexture();
+	//myModelManager.getMeshVector()[0].loadToGPU();
+	//myModelManager.drawModels(myModelManager.getMeshVector()[0]);
+	//myModelManager.getMeshVector()[0].unloadFromGPU();
 	do {
 		check_gl_error();
 
 		//use the control key to free the mouse
 		if (glfwGetKey(g_pWindow, GLFW_KEY_LEFT_CONTROL) != GLFW_PRESS)
-			nUseMouse = 1;
-		else
 			nUseMouse = 0;
+		else
+			nUseMouse = 1;
 
 		// Measure speed
 		double currentTime = glfwGetTime();
@@ -154,19 +159,18 @@ int main(void)
 
 		// Send our transformation to the currently bound shader,
 		// in the "MVP" uniform
-		//myModelManager.calcMVP(myModelManager.getMOdelVector()[0]);
-		//myModelManager.setMatrixToGPU(myModelManager.getMOdelVector()[0]);
+		
 
 		glm::vec3 lightPos = glm::vec3(4, 4, 4);
 		glUniform3f(myModelManager.getLightID(), lightPos.x, lightPos.y, lightPos.z);
 
-		//myModelManager.getMOdelVector()[0].startTexture();
+		
 
-		//myModelManager.getMeshVector()[0].loadToGPU();
+		myModelManager.getMeshVector()[0].loadToGPU();
 		
 		//myModelManager.drawModels(myModelManager.getMeshVector()[0]);
 
-		//myModelManager.getMeshVector()[0].unloadFromGPU();
+		myModelManager.getMeshVector()[0].unloadFromGPU();
 
 		// Draw tweak bars
 		TwDraw();
@@ -180,9 +184,9 @@ int main(void)
 		glfwWindowShouldClose(g_pWindow) == 0);
 
 	// Cleanup VBO and shader
-	//myModelManager.getMeshVector()[0].~mesh();
-	//myModelManager.getMOdelVector()[0].~model();
-	//myModelManager.~modelManager();
+	myModelManager.getMeshVector()[0].~mesh();
+	myModelManager.getMOdelVector()[0].~model();
+	myModelManager.~modelManager();
 	
 	glDeleteVertexArrays(1, &VertexArrayID);
 

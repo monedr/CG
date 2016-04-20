@@ -36,7 +36,7 @@ void modelManager::calcMVP(model model) {
 }
 
 void modelManager::setMatrixToGPU(model model) {
-	
+	calcMVP(model);
 	glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix4fv(model.getModelMatrixID(), 1, GL_FALSE, &model.getModelMatrix()[0][0]);
 	glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
@@ -49,7 +49,7 @@ void modelManager::setLightPosition(char * LightPosition_worldspace) {
 
 }
 void modelManager::drawModels(mesh mesh) {
-
+	printf("FODEUUU");
 	// Draw the triangles !
 	glDrawElements(
 		GL_TRIANGLES,        // mode
@@ -57,6 +57,7 @@ void modelManager::drawModels(mesh mesh) {
 		GL_UNSIGNED_SHORT,   // type
 		(void*)0             // element array buffer offset
 	);
+
 }
 
 GLuint modelManager::getLightID() {
