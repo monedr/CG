@@ -23,7 +23,7 @@ void modelManager::loadMesh(char * path) {
 }
 void modelManager::creatModel( char* texture, char* myTextureSampler) {
 	model auxModel(programID, texture, myTextureSampler, meshVector.size() - 1);
-	modelVector.push_back(auxModel);
+//	modelVector.push_back(auxModel);
 }
 
 void modelManager::calcMVP(model model) {

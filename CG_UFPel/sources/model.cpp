@@ -1,5 +1,8 @@
 #include "model.hpp"
 #include <shader.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp> 
 
 //programID loads the shader
 //texture loads the texture as each obj has it's own
@@ -37,8 +40,11 @@ void model::startTexture() {
 }
 
 void model::setTransformation() {
-
-
+	//glm::translate(glm::mat4(1.0), glm::vec3(-1.0f, 0.0f, -3.0f))
+	//glm::mat4 myMatrix = glm::translate(10.0f, 0.0f, 0.0f);
+	//glm::vec4 myVector(10.0f, 10.0f, 10.0f, 0.0f);
+	//glm::vec4 transformedVector = myMatrix * myVector;
+	//ModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(1.0f, 1.0f, 10.0f));
 }
 
 glm::mat4 model::getModelMatrix(){

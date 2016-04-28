@@ -42,7 +42,6 @@ class mesh
 
 public:
 	mesh::mesh(const char * path);
-
 	void mesh::loadToGPU();
 	void mesh::unloadFromGPU();
 
