@@ -12,7 +12,12 @@ model::model( GLuint programID, const char * texture,  const char * myTextureSam
 	// Load the texture
 	//Texture = loadDDS("mesh/uvmap.DDS");
 	Texture = loadDDS(texture);
+	// Bind our texture in Texture Unit 0
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, Texture);
 
+	// Set our "myTextureSampler" sampler to user Texture Unit 0
+	glUniform1i(TextureID, 0);
 	// Get a handle for our "myTextureSampler" uniform
 	TextureID = glGetUniformLocation(programID, myTextureSampler);
 	// matriz para aplicar as tranformações, atualmente com a matriz identidade

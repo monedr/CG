@@ -49,15 +49,17 @@ void modelManager::setLightPosition(char * LightPosition_worldspace) {
 
 }
 void modelManager::drawModels(mesh mesh) {
-	printf("FODEUUU");
+	printf("passou aqui\n");
+	int ind = 2904;
+	printf("aqui também %i\n", ind);
 	// Draw the triangles !
 	glDrawElements(
 		GL_TRIANGLES,        // mode
-		mesh.getIndices().size(), // count
+		ind, // count
 		GL_UNSIGNED_SHORT,   // type
 		(void*)0             // element array buffer offset
 	);
-
+	printf("aqui deu ruim\n", ind);
 }
 
 GLuint modelManager::getLightID() {

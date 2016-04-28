@@ -27,7 +27,7 @@ using namespace glm;
 #include <vboindexer.hpp>
 #include <glerror.hpp>
 
-//my include
+// my include
 #include <mesh.hpp>
 #include <model.hpp>
 #include <modelManager.hpp>
@@ -115,23 +115,23 @@ int main(void)
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
-	// Read our .obj file
-	modelManager myModelManager("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
-	myModelManager.loadMesh("mesh/suzanne.obj");
-	myModelManager.creatModel("mesh/uvmap.DDS", "myTextureSampler");
-	myModelManager.setLightPosition("LightPosition_worldspace");
+	// Create and compile our GLSL program from the shaders
+	GLuint programID = LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
 
+	// Get a handle for our "MVP" uniform
+	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+	GLuint ViewMatrixID = glGetUniformLocation(programID, "V");
 
+	mesh mymesh("mesh/suzanne.obj");
+	model mymodel(programID, "mesh/uvmap.DDS", "myTextureSampler", 0);
+	// Get a handle for our "LightPosition" uniform
+	glUseProgram(programID);
+	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
 	// For speed computation
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;
-	//myModelManager.calcMVP(myModelManager.getMOdelVector()[0]);
-	myModelManager.setMatrixToGPU(myModelManager.getMOdelVector()[0]);
-	myModelManager.getMOdelVector()[0].startTexture();
-	//myModelManager.getMeshVector()[0].loadToGPU();
-	//myModelManager.drawModels(myModelManager.getMeshVector()[0]);
-	//myModelManager.getMeshVector()[0].unloadFromGPU();
+
 	do {
 		check_gl_error();
 
@@ -154,23 +154,37 @@ int main(void)
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Use our shader
+		glUseProgram(programID);
+
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
+		glm::mat4 ProjectionMatrix = getProjectionMatrix();
+		glm::mat4 ViewMatrix = getViewMatrix();
+		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * mymodel.getModelMatrix();
 
 		// Send our transformation to the currently bound shader,
 		// in the "MVP" uniform
-		
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(mymodel.getModelMatrixID(), 1, GL_FALSE, &mymodel.getModelMatrix()[0][0]);
+		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
 
 		glm::vec3 lightPos = glm::vec3(4, 4, 4);
-		glUniform3f(myModelManager.getLightID(), lightPos.x, lightPos.y, lightPos.z);
+		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
-		
+		mymodel.startTexture();
 
-		myModelManager.getMeshVector()[0].loadToGPU();
-		
-		//myModelManager.drawModels(myModelManager.getMeshVector()[0]);
+		mymesh.loadToGPU();
 
-		myModelManager.getMeshVector()[0].unloadFromGPU();
+		// Draw the triangles !
+		glDrawElements(
+			GL_TRIANGLES,        // mode
+			mymesh.getIndices().size(),      // count
+			GL_UNSIGNED_SHORT,   // type
+			(void*)0             // element array buffer offset
+		);
+
+		mymesh.unloadFromGPU();
 
 		// Draw tweak bars
 		TwDraw();
@@ -184,10 +198,9 @@ int main(void)
 		glfwWindowShouldClose(g_pWindow) == 0);
 
 	// Cleanup VBO and shader
-	myModelManager.getMeshVector()[0].~mesh();
-	myModelManager.getMOdelVector()[0].~model();
-	myModelManager.~modelManager();
-	
+	mymesh.~mesh();
+	glDeleteProgram(programID);
+	mymodel.~model();
 	glDeleteVertexArrays(1, &VertexArrayID);
 
 	// Terminate AntTweakBar and GLFW
