@@ -124,7 +124,7 @@ int main(void)
 
 	mesh mymesh("mesh/suzanne.obj");
 	model mymodel(programID, "mesh/uvmap.DDS", "myTextureSampler",0);
-	//mymodel.setTransformation();
+	mymodel.setTransformation();
 	// Get a handle for our "LightPosition" uniform
 	glUseProgram(programID);
 	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
