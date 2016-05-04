@@ -95,6 +95,10 @@ int main(void)
 	// Add 'bgColor' to 'bar': it is a modifable variable of type TW_TYPE_COLOR3F (3 floats color)
 	vec3 oColor(0.0f);
 	TwAddVarRW(g_pToolBar, "bgColor", TW_TYPE_COLOR3F, &oColor[0], " label='Background color' ");
+	
+	//adicionando campos para a leitura de dados para as funções de tranformação(model) e configuração da camera(view and projection)
+	//TwAddVarRW(g_pToolBar, "bgColor", TW_TYPE_ENUM, , " label='Model Transformations' ");
+	//TwAddVarRW(g_pToolBar, "bgColor", TW_TYPE_COLOR3F, &oColor[0], " label='View Config' ");
 
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(g_pWindow, GLFW_STICKY_KEYS, GL_TRUE);
@@ -151,17 +155,21 @@ int main(void)
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
-
+	
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Use our shader
 		glUseProgram(programID);
-
+		mymodel.setTransformation();
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
-		glm::mat4 ViewMatrix = getViewMatrix();
+		glm::mat4 ViewMatrix = glm::lookAt(
+			glm::vec3(1.2f, 1.2f, 1.2f),
+			glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.0f, 0.0f, 1.0f)
+		);
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * mymodel.getModelMatrix();
 
 		// Send our transformation to the currently bound shader,
