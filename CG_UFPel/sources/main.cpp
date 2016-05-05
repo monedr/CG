@@ -18,6 +18,7 @@ TwBar *g_pToolBar;
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 using namespace glm;
 
 #include <shader.hpp>
@@ -164,11 +165,11 @@ int main(void)
 		mymodel.setTransformation();
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
-		glm::mat4 ProjectionMatrix = getProjectionMatrix();
+		glm::mat4 ProjectionMatrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 100.0f);
 		glm::mat4 ViewMatrix = glm::lookAt(
-			glm::vec3(1.2f, 1.2f, 1.2f),
-			glm::vec3(0.0f, 0.0f, 0.0f),
-			glm::vec3(0.0f, 0.0f, 1.0f)
+			glm::vec3(4.0f, 3.0f, 3.0f), //origem
+			glm::vec3(0.0f, 0.0f, 0.0f), //lookat
+			glm::vec3(0.0f, 1.0f, 0.0f)  //upvector
 		);
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * mymodel.getModelMatrix();
 
