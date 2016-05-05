@@ -41,6 +41,17 @@ void WindowSizeCallBack(GLFWwindow *pWindow, int nWidth, int nHeight) {
 	TwWindowSize(g_nWidth, g_nHeight);
 }
 
+glm::mat4 setView() {
+
+	glm::mat4 ViewMatrix = glm::lookAt(
+		glm::vec3(0.f, 0.f, 2.0f), //origem
+		glm::vec3(0.f, 0.f, 0.f), //look
+		glm::vec3(0.0f, 1.0f, 0.0f) //up
+	);
+	
+	return ViewMatrix;
+}
+
 int main(void)
 {
 	int nUseMouse = 0;
@@ -165,19 +176,18 @@ int main(void)
 		mymodel.setTransformation();
 		// Compute the MVP matrix from keyboard and mouse input
 		computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
-		glm::mat4 ProjectionMatrix = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 100.0f);
-		glm::mat4 ViewMatrix = glm::lookAt(
-			glm::vec3(4.0f, 3.0f, 3.0f), //origem
-			glm::vec3(0.0f, 0.0f, 0.0f), //lookat
-			glm::vec3(0.0f, 1.0f, 0.0f)  //upvector
-		);
-		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * mymodel.getModelMatrix();
+		glm::mat4 ProjectionMatrix = perspective(60.0f, (float)g_nWidth / (float)g_nHeight, 0.1f, 100.0f);
+		//	ortho (T const &left, T const &right, T const &bottom, T const &top, T const &zNear, T const &zFar)
+		//glm::ortho(-10.0f, 100.0f, -100.0f, 10.0f, 0.0f, 100.0f);
+		//glm::ortho(0.0f, (float)g_nWidth, (float)g_nHeight, 0.0f, 0.1f, 100.0f);
+		// glm::perspective(60.0f, (float)g_nWidth / (float)g_nHeight, 0.1f, 100.0f);
+		glm::mat4 MVP = ProjectionMatrix * setView() * mymodel.getModelMatrix();
 
 		// Send our transformation to the currently bound shader,
 		// in the "MVP" uniform
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 		glUniformMatrix4fv(mymodel.getModelMatrixID(), 1, GL_FALSE, &mymodel.getModelMatrix()[0][0]);
-		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &setView()[0][0]);
 
 		glm::vec3 lightPos = glm::vec3(4, 4, 4);
 		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);

@@ -41,11 +41,12 @@ void model::startTexture() {
 
 void model::setTransformation() {
 	// rotação ok
-	//ModelMatrix = glm::rotate(glm::mat4(1.0), glm::degrees(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	//ModelMatrix = glm::rotate(glm::mat4(1.0), glm::degrees(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	//translação ok
-	//ModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(1.0f, 1.0f, 1.0f));
+	//ModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
 	// escala ok
 	//ModelMatrix = glm::scale(2.0f, 2.0f, 2.0f);
+	//ModelMatrix = (glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f))) * (glm::rotate(glm::mat4(1.0), glm::degrees(45.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
 }
 
 glm::mat4 model::getModelMatrix(){
