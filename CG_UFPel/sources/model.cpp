@@ -3,13 +3,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp> 
+#include <mesh.hpp>
 
 //programID loads the shader
 //texture loads the texture as each obj has it's own
 //meshID links the mesh to the model
-model::model( GLuint programID, const char * texture,  const char * myTextureSampler, GLuint meshID){
 
-	model::meshIndex = meshID;
+model::model( GLuint programID, const char * texture,  const char * myTextureSampler, mesh malha){
+
+	mesh = malha;
 	ModelMatrixID = glGetUniformLocation(programID, "M");
 
 	// Load the texture
@@ -47,6 +49,17 @@ void model::setTransformation() {
 	// escala ok
 	//ModelMatrix = glm::scale(2.0f, 2.0f, 2.0f);
 	//ModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4(1.0), glm::degrees(45.0f), glm::vec3(0.0f, 0.0f, 0.0f))*glm::scale(2.0f, 2.0f, 2.0f);
+}
+
+void model::drawModels() {
+
+	// Draw the triangles !
+	glDrawElements(
+		GL_TRIANGLES,        // mode
+		mesh.getIndices().size(), // count
+		GL_UNSIGNED_SHORT,   // type
+		(void*)0             // element array buffer offset
+	);
 }
 
 glm::mat4 model::getModelMatrix(){

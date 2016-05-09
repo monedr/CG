@@ -20,9 +20,12 @@ void modelManager::loadMesh(char * path) {
 	//carrega a malha no vetor de malhas
 	mesh mesh(path);
 	meshVector.push_back(mesh);
+
 }
-void modelManager::creatModel( char* texture, char* myTextureSampler) {
-	model auxModel(programID, texture, myTextureSampler, meshVector.size() - 1);
+void modelManager::creatModel( char* texture, char* myTextureSampler, char * path) {
+
+	loadMesh(path);
+	model auxModel(programID, texture, myTextureSampler, 0);
 //	modelVector.push_back(auxModel);
 }
 
@@ -46,21 +49,10 @@ void modelManager::setLightPosition(char * LightPosition_worldspace) {
 	// Get a handle for our "LightPosition" uniform
 	glUseProgram(programID);
 	LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
+	glm::vec3 lightPos = glm::vec3(4, 4, 4);
+	glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
+}
 
-}
-void modelManager::drawModels(mesh mesh) {
-	printf("passou aqui\n");
-	int ind = 2904;
-	printf("aqui também %i\n", ind);
-	// Draw the triangles !
-	glDrawElements(
-		GL_TRIANGLES,        // mode
-		ind, // count
-		GL_UNSIGNED_SHORT,   // type
-		(void*)0             // element array buffer offset
-	);
-	printf("aqui deu ruim\n", ind);
-}
 
 GLuint modelManager::getLightID() {
 		return LightID;

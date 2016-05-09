@@ -46,12 +46,11 @@ public:
 
 	modelManager::modelManager(char * vertexshader, char * fragmentshader);
 	
-	void modelManager::creatModel( char* texture, char* myTextureSampler);
+	void modelManager::creatModel( char* texture, char* myTextureSampler, char * path);
 	void modelManager::loadMesh(char * path);
 	void modelManager::calcMVP(model model);
 	void modelManager::setMatrixToGPU(model model);
 	void modelManager::setLightPosition(char * LightPosition_worldspace);
-	void modelManager::drawModels(mesh mesh);
 
 	GLuint modelManager::getLightID();
 	GLuint modelManager::getProgramID();

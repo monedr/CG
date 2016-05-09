@@ -29,12 +29,15 @@ class model
 	glm::mat4 ModelMatrix;
 	GLuint Texture;
 	GLuint TextureID;
+	mesh mesh;
+
 public:
 	//programID loads the shader
-	model::model(GLuint programID, const char * texture, const char * myTextureSampler, GLuint meshID);
+	model::model(GLuint programID, const char * texture, const char * myTextureSampler, mesh malha);
 
 	void model::startTexture();
 	void model::setTransformation();
+	void model::drawModels();
 
 	glm::mat4 model::getModelMatrix();
 	GLuint model::getModelMatrixID();
