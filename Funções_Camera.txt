@@ -1,0 +1,21 @@
+glm::mat4 setView() {
+
+	glm::mat4 ViewMatrix = glm::lookAt(
+		glm::vec3(0.f, 0.f, 2.0f), //origem
+		glm::vec3(0.f, 0.f, 0.f), //look
+		glm::vec3(0.0f, 1.0f, 0.0f) //up
+	);
+	
+	return ViewMatrix;
+}
+
+glm::mat4 setProjection() {
+
+	glm::mat4 ProjectionMatrix = glm::perspective(60.0f, (float)g_nWidth / (float)g_nHeight, 0.1f, 100.0f);
+	//	ortho (T const &left, T const &right, T const &bottom, T const &top, T const &zNear, T const &zFar)
+	//glm::ortho(-10.0f, 100.0f, -100.0f, 10.0f, 0.0f, 100.0f);
+	//glm::ortho(0.0f, (float)g_nWidth, (float)g_nHeight, 0.0f, 0.1f, 100.0f);
+	// glm::perspective(60.0f, (float)g_nWidth / (float)g_nHeight, 0.1f, 100.0f);
+
+	return ProjectionMatrix;
+}

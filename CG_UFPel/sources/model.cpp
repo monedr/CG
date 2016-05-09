@@ -46,7 +46,7 @@ void model::setTransformation() {
 	//ModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f));
 	// escala ok
 	//ModelMatrix = glm::scale(2.0f, 2.0f, 2.0f);
-	//ModelMatrix = (glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f))) * (glm::rotate(glm::mat4(1.0), glm::degrees(45.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+	//ModelMatrix = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4(1.0), glm::degrees(45.0f), glm::vec3(0.0f, 0.0f, 0.0f))*glm::scale(2.0f, 2.0f, 2.0f);
 }
 
 glm::mat4 model::getModelMatrix(){
