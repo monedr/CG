@@ -126,3 +126,6 @@ mesh::~mesh(){
 	glDeleteBuffers(1, &elementbuffer);
 }
 
+mesh::mesh() {
+
+}

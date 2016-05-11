@@ -51,6 +51,7 @@ public:
 	GLuint* getNormalbuffer();
 	GLuint* getElementbuffer();
 
+	mesh::mesh();
 	~mesh();
 };
 

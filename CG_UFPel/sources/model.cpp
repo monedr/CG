@@ -9,9 +9,9 @@
 //texture loads the texture as each obj has it's own
 //meshID links the mesh to the model
 
-model::model( GLuint programID, const char * texture,  const char * myTextureSampler, mesh malha){
+model::model( GLuint programID, const char * texture,  const char * myTextureSampler, mesh mesh){
 
-	mesh = malha;
+	malha = mesh;
 	ModelMatrixID = glGetUniformLocation(programID, "M");
 
 	// Load the texture
@@ -56,7 +56,7 @@ void model::drawModels() {
 	// Draw the triangles !
 	glDrawElements(
 		GL_TRIANGLES,        // mode
-		mesh.getIndices().size(), // count
+		malha.getIndices().size(), // count
 		GL_UNSIGNED_SHORT,   // type
 		(void*)0             // element array buffer offset
 	);
@@ -85,5 +85,4 @@ GLuint model::getMeshIndex(){
 model::~model(){
 	  glDeleteTextures(1, &Texture);
 }
-model::model() {
-}
+

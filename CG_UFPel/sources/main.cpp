@@ -116,7 +116,10 @@ int main(void)
 
 	modelManager myModelManager("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
 	myModelManager.setLightPosition("LightPosition_worldspace");
-	myModelManager.creatModel("mesh/uvmap.DDS", "myTextureSampler", "mesh/suzanne.obj");
+	myModelManager.loadMesh("mesh/suzanne.obj");
+	printf("tamanho do vetor de malhas: %d\n", myModelManager.getMeshVector().size());
+	myModelManager.creatModel("mesh/uvmap.DDS", "myTextureSampler", myModelManager.getMeshVector()[0]);
+	printf("tamanho do vetor de modelos: %d\n", myModelManager.getMOdelVector().size());
 
 	// For speed computation
 	double lastTime = glfwGetTime();
@@ -143,6 +146,8 @@ int main(void)
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		myModelManager.setMatrixToGPU(myModelManager.getMOdelVector()[0]);
+		myModelManager.getMOdelVector()[0].drawModels();
 
 
 		// Draw tweak bars
@@ -158,8 +163,7 @@ int main(void)
 
 	// Cleanup VBO and shader
 	myModelManager.~modelManager();
-	myModelManager.getMOdelVector()[0].~model();
-	myModelManager.getMeshVector()[0].~mesh();
+
 	glDeleteVertexArrays(1, &VertexArrayID);
 
 	// Terminate AntTweakBar and GLFW

@@ -46,7 +46,7 @@ public:
 
 	modelManager::modelManager(char * vertexshader, char * fragmentshader);
 	
-	void modelManager::creatModel( char* texture, char* myTextureSampler, char * path);
+	void modelManager::creatModel( char* texture, char* myTextureSampler, mesh mesh);
 	void modelManager::loadMesh(char * path);
 	void modelManager::calcMVP(model model);
 	void modelManager::setMatrixToGPU(model model);

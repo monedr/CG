@@ -22,11 +22,10 @@ void modelManager::loadMesh(char * path) {
 	meshVector.push_back(mesh);
 
 }
-void modelManager::creatModel( char* texture, char* myTextureSampler, char * path) {
+void modelManager::creatModel( char* texture, char* myTextureSampler, mesh mesh) {
 
-	loadMesh(path);
-	model auxModel(programID, texture, myTextureSampler, 0);
-//	modelVector.push_back(auxModel);
+	model auxModel(programID, texture, myTextureSampler, mesh);
+	modelVector.push_back(auxModel);
 }
 
 void modelManager::calcMVP(model model) {
