@@ -9,7 +9,6 @@
 // Include GLEW
 #include <GL/glew.h>
 
-
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,27 +23,34 @@ using namespace glm;
 
 class model
 {
-	GLuint meshIndex;
+
+	// Create and compile our GLSL program from the shaders
+	GLuint programID;
+
+	// Get a handle for our "MVP" uniform
+	GLuint MatrixID;
+	GLuint ViewMatrixID;
 	GLuint ModelMatrixID;
-	glm::mat4 ModelMatrix;
+
+	// Load the texture
 	GLuint Texture;
+
+	// Get a handle for our "myTextureSampler" uniform
 	GLuint TextureID;
+	
 	mesh malha;
 
 public:
-	//programID loads the shader
-	model::model(GLuint programID, const char * texture, const char * myTextureSampler, mesh mesh);
-
-	void model::startTexture();
-	void model::setTransformation();
-	void model::drawModels();
-
-	glm::mat4 model::getModelMatrix();
+	
+	model::model(const char * vertexshader, const char * fragmentshader, const char *texture, const char *textureSampler, mesh outraMalha);
+	GLuint model::getProgramID();
+	GLuint model::getMatrixID();
+	GLuint model::getViewMatrixID();
 	GLuint model::getModelMatrixID();
 	GLuint model::getTexture();
 	GLuint model::getTextureID();
-	GLuint model::getMeshIndex();
-	//void model::clearbuffer();
+	  mesh model::getMesh();
+
 	~model();
 };
 

@@ -40,6 +40,7 @@ class mesh
 	GLuint normalbuffer;
 	GLuint elementbuffer;
 
+
 public:
 	mesh::mesh(const char * path);
 	void mesh::loadToGPU();
