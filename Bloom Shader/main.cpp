@@ -112,78 +112,17 @@ int main(void)
 
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
-	GLuint shader = LoadShaders("shaders/BloomVertexShader.vertexshader", "shaders/BloomFragmentShader.fragmentshader");
-	GLuint shaderLight = LoadShaders("shaders/BloomVertexShader.vertexshader", "shaders/BloomLightFragmentShader.fragmentshader");
-	GLuint shaderBlur = LoadShaders("shaders/BlurVertexShader.vertexshader", "shaders/BlurFragmentShader.fragmentshader");
-	GLuint shaderBloomFinal = LoadShaders("shaders/BloomFinalVertexShader.vertexshader", "shaders/BloomFinalFragmentShader.fragmentshader");
 
-	glUseProgram(shaderBloomFinal);
-	glUniform1i(glGetUniformLocation(shaderBloomFinal, "scene"), 0);
-	glUniform1i(glGetUniformLocation(shaderBloomFinal, "bloomBlur"), 1);
-
-	// Framebuffers
-	GLuint framebuffer;
-	glGenFramebuffers(1, &framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	// Get a handle for our "MVP" uniform
+	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+	GLuint ViewMatrixID = glGetUniformLocation(programID, "V");
+	GLuint ModelMatrixID = glGetUniformLocation(programID, "M");
 
 	// Load the texture
-	GLuint texColorBuffer[2];
-	texColorBuffer[0] = loadDDS("mesh/uvmap.DDS"); //carrega textura da suzane
+	GLuint Texture = loadDDS("mesh/uvmap.DDS");
+
 	// Get a handle for our "myTextureSampler" uniform
 	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
-	// Attach it to currently bound framebuffer object
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer[0], 0);
-
-	glGenTextures(1, &texColorBuffer[1]);
-	glBindTexture(GL_TEXTURE_2D, texColorBuffer[1]);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, g_nWidth, g_nHeight, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  // We clamp to the edge as the blur filter would otherwise sample repeated texture values!
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	// attach texture to framebuffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + 1, GL_TEXTURE_2D, texColorBuffer[1], 0);
-	
-	
-	// Create a renderbuffer object for depth and stencil attachment
-	GLuint rbo;
-	glGenRenderbuffers(1, &rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, g_nWidth, g_nHeight);
-	// - Tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-	glDrawBuffers(2, attachments);
-
-	//glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-	//Then, as a final step before we can complete the framebuffer, we attach the renderbuffer object to the depth and stencil attachment of the framebuffer:
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		printf("ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n");
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// Ping pong framebuffer for blurring
-	GLuint pingpongFBO[2];
-	GLuint pingpongColorbuffers[2];
-	glGenFramebuffers(2, pingpongFBO);
-	glGenTextures(2, pingpongColorbuffers);
-	for (GLuint i = 0; i < 2; i++)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
-		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, g_nWidth, g_nHeight, 0, GL_RGB, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // We clamp to the edge as the blur filter would otherwise sample repeated texture values!
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0);
-		// Also check if framebuffers are complete (no need for depth buffer)
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-			printf("ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n");
-	}
-	// Get a handle for our "myTextureSampler" uniform
-//	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
 
 	// Read our .obj file
 	std::vector<glm::vec3> vertices;
@@ -220,9 +159,91 @@ int main(void)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned short), &indices[0], GL_STATIC_DRAW);
 
+	// Get a handle for our "LightPosition" uniform
+	glUseProgram(programID);
+	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
+
 	// For speed computation
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;
+
+	// ---------------------------------------------
+	// Render to Texture - specific code begins here
+	// ---------------------------------------------
+
+	// The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
+	GLuint FramebufferName = 0;
+	glGenFramebuffers(1, &FramebufferName);
+	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+
+	// The texture we're going to render to
+	GLuint renderedTexture;
+	glGenTextures(1, &renderedTexture);
+
+	// "Bind" the newly created texture : all future texture functions will modify this texture
+	glBindTexture(GL_TEXTURE_2D, renderedTexture);
+
+	// Give an empty image to OpenGL ( the last "0" means "empty" )
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, g_nWidth, g_nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+	// Poor filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	// The depth buffer
+	GLuint depthrenderbuffer;
+	glGenRenderbuffers(1, &depthrenderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, g_nWidth, g_nHeight);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
+
+	//// Alternative : Depth texture. Slower, but you can sample it later in your shader
+	//GLuint depthTexture;
+	//glGenTextures(1, &depthTexture);
+	//glBindTexture(GL_TEXTURE_2D, depthTexture);
+	//glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT24, 1024, 768, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	// Set "renderedTexture" as our colour attachement #0
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
+
+	//// Depth texture alternative : 
+	//glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+
+
+	// Set the list of draw buffers.
+	GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
+
+								   // Always check that our framebuffer is ok
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		printf("errooo");
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// The fullscreen quad's FBO
+	static const GLfloat g_quad_vertex_buffer_data[] = {
+		-1.0f, -1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+		-1.0f,  1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		1.0f,  1.0f, 0.0f,
+	};
+
+	GLuint quad_vertexbuffer;
+	glGenBuffers(1, &quad_vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
+
+	// Create and compile our GLSL program from the shaders
+	GLuint quad_programID = LoadShaders("shaders/Passthrough.vertexshader", "shaders/WobblyTexture.fragmentshader");
+	GLuint texID = glGetUniformLocation(quad_programID, "renderedTexture");
+	GLuint timeID = glGetUniformLocation(quad_programID, "time");
 
 	do {
 		check_gl_error();
@@ -243,17 +264,19 @@ int main(void)
 			lastTime += 1.0;
 		}
 
-		// 1. Render scene into floating point framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		// Render to our framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+		// Render on the whole framebuffer, complete from the lower left corner to the upper right
+		glViewport(0, 0, g_nWidth, g_nHeight);
+
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Get a handle for our "MVP" uniform
-		glUseProgram(shader);
-		GLuint ModelMatrixID = glGetUniformLocation(shader, "M");
-		GLuint ViewMatrixID = glGetUniformLocation(shader, "V");
-		GLuint MatrixID = glGetUniformLocation(shader, "MVP");
+		// Use our shader
+		glUseProgram(programID);
 
+		// Compute the MVP matrix from keyboard and mouse input
+		computeMatricesFromInputs(nUseMouse, g_nWidth, g_nHeight);
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
 		glm::mat4 ViewMatrix = getViewMatrix();
 		glm::mat4 ModelMatrix = glm::mat4(1.0);
@@ -265,13 +288,12 @@ int main(void)
 		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
 
-		GLuint LightID = glGetUniformLocation(shader, "LightPosition_worldspace");
 		glm::vec3 lightPos = glm::vec3(4, 4, 4);
 		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
 
 		// Bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texColorBuffer[0]);
+		glBindTexture(GL_TEXTURE_2D, Texture);
 		// Set our "myTextureSampler" sampler to user Texture Unit 0
 		glUniform1i(TextureID, 0);
 
@@ -322,67 +344,53 @@ int main(void)
 			(void*)0             // element array buffer offset
 		);
 
-		// - finally show all the light sources as bright cubes
-		// Get a handle for our "MVP" uniform
-		glUseProgram(shaderLight);
-		ModelMatrixID = glGetUniformLocation(shaderLight, "M");
-		ViewMatrixID = glGetUniformLocation(shaderLight, "V");
-		MatrixID = glGetUniformLocation(shaderLight, "MVP");
-
-		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-
-		// Send our transformation to the currently bound shader,
-		// in the "MVP" uniform
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-
-
-		LightID = glGetUniformLocation(shaderLight, "LightPosition_worldspace");
-		lightPos = glm::vec3(4, 4, 4);
-		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		// 2. Blur bright fragments w/ two-pass Gaussian Blur 
-		GLboolean horizontal = true, first_iteration = true;
-		GLuint amount = 10;
-		glUseProgram(shaderBlur);
-		for (GLuint i = 0; i < amount; i++)
-		{
-			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
-			glUniform1i(glGetUniformLocation(shaderBlur, "horizontal"), horizontal);
-			glBindTexture(GL_TEXTURE_2D, first_iteration ? texColorBuffer[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
-																												  // Draw the triangles !
-			glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT,  (void*)0);
-			horizontal = !horizontal;
-			if (first_iteration)
-				first_iteration = false;
-		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		// 2. Now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glUseProgram(shaderBloomFinal);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texColorBuffer[0]);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
-		glUniform1i(glGetUniformLocation(shaderBloomFinal, "bloom"), 0);
-		glUniform1f(glGetUniformLocation(shaderBloomFinal, "exposure"), 1);
-
-		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0);
-
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
 
+		// Render to the screen
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		// Render on the whole framebuffer, complete from the lower left corner to the upper right
+		glViewport(0, 0, g_nWidth, g_nHeight);
+
+		// Clear the screen
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Use our shader
+		glUseProgram(quad_programID);
+
+		// Bind our texture in Texture Unit 0
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, renderedTexture);
+		// Set our "renderedTexture" sampler to user Texture Unit 0
+		glUniform1i(texID, 0);
+
+		glUniform1f(timeID, (float)(glfwGetTime()*10.0f));
+
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, quad_vertexbuffer);
+		glVertexAttribPointer(
+			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// Draw the triangles !
+		glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
+
+		glDisableVertexAttribArray(0);
+
 		// Draw tweak bars
-		TwDraw();
+		//TwDraw();
 
 		// Swap buffers
 		glfwSwapBuffers(g_pWindow);
 		glfwPollEvents();
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	} // Check if the ESC key was pressed or the window was closed
 	while (glfwGetKey(g_pWindow, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		glfwWindowShouldClose(g_pWindow) == 0);
@@ -393,8 +401,7 @@ int main(void)
 	glDeleteBuffers(1, &normalbuffer);
 	glDeleteBuffers(1, &elementbuffer);
 	glDeleteProgram(programID);
-	glDeleteTextures(1, &texColorBuffer[0]);
-	glDeleteTextures(1, &texColorBuffer[1]);
+	glDeleteTextures(1, &Texture);
 	glDeleteVertexArrays(1, &VertexArrayID);
 
 	// Terminate AntTweakBar and GLFW
