@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
-
+#include <Windows.h>
 // Include GLEW
 #include <GL/glew.h>
 
@@ -346,16 +346,16 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//quad_programID
 		// Use our shader
-		glUseProgram(quad_programID);
+		glUseProgram(HDR_programID);
 
 		// Bind our texture in Texture Unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, renderedTexture);
 		// Set our "renderedTexture" sampler to user Texture Unit 0
-		glUniform1i(texID, 0);
+		//glUniform1i(texID, 0);
 
-		//glUniform1i(glGetUniformLocation(HDR_programID, "hdr"), hdr);
-		//glUniform1f(glGetUniformLocation(HDR_programID, "exposure"), exposure);
+		glUniform1i(glGetUniformLocation(HDR_programID, "hdr"), hdr);
+		glUniform1f(glGetUniformLocation(HDR_programID, "exposure"), exposure);
 
 		//glUniform1f(timeID, (float)(glfwGetTime()*10.0f));
 
@@ -370,7 +370,7 @@ int main(void)
 			0,                  // stride
 			(void*)0            // array buffer offset
 		);
-
+	
 		// Draw the triangles !
 		glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
 
@@ -382,7 +382,8 @@ int main(void)
 		// Swap buffers
 		glfwSwapBuffers(g_pWindow);
 		glfwPollEvents();
-
+		Sleep(10000);
+		
 	} // Check if the ESC key was pressed or the window was closed
 	while (glfwGetKey(g_pWindow, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
 		glfwWindowShouldClose(g_pWindow) == 0);
