@@ -205,7 +205,7 @@ int main(void)
 	//GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
 	//glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
 
-								   // Always check that our framebuffer is ok
+    // Always check that our framebuffer is ok
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		printf("errooo");
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -251,9 +251,9 @@ int main(void)
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
-		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		// Render to our framebuffer
-		//glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		// Render on the whole framebuffer, complete from the lower left corner to the upper right
 		glViewport(0, 0, g_nWidth, g_nHeight); 
 
@@ -335,7 +335,8 @@ int main(void)
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
-		/*
+
+		
 		// Render to the screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// Render on the whole framebuffer, complete from the lower left corner to the upper right
@@ -374,7 +375,7 @@ int main(void)
 		glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
 
 		glDisableVertexAttribArray(0);
-		*/
+		
 		// Draw tweak bars
 		//TwDraw();
 
