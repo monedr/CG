@@ -112,7 +112,7 @@ int main(void)
 
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("shaders/StandardShading.vertexshader", "shaders/StandardShading.fragmentshader");
-
+	
 	// Get a handle for our "MVP" uniform
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
 	GLuint ViewMatrixID = glGetUniformLocation(programID, "V");
@@ -172,7 +172,7 @@ int main(void)
 	// ---------------------------------------------
 
 	// The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
-	GLuint FramebufferName = 0;
+	GLuint FramebufferName;
 	glGenFramebuffers(1, &FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 
@@ -184,13 +184,15 @@ int main(void)
 	glBindTexture(GL_TEXTURE_2D, renderedTexture);
 
 	// Give an empty image to OpenGL ( the last "0" means "empty" )
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, g_nWidth, g_nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, g_nWidth, g_nHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 
 	// Poor filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Set "renderedTexture" as our colour attachement #0
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderedTexture, 0);
+	//glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
 
 	// The depth buffer
 	GLuint depthrenderbuffer;
@@ -199,26 +201,9 @@ int main(void)
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, g_nWidth, g_nHeight);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
 
-	//// Alternative : Depth texture. Slower, but you can sample it later in your shader
-	//GLuint depthTexture;
-	//glGenTextures(1, &depthTexture);
-	//glBindTexture(GL_TEXTURE_2D, depthTexture);
-	//glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT24, 1024, 768, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	// Set "renderedTexture" as our colour attachement #0
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
-
-	//// Depth texture alternative : 
-	//glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
-
-
 	// Set the list of draw buffers.
-	GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-	glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
+	//GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+	//glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
 
 								   // Always check that our framebuffer is ok
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -241,10 +226,13 @@ int main(void)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_quad_vertex_buffer_data), g_quad_vertex_buffer_data, GL_STATIC_DRAW);
 
 	// Create and compile our GLSL program from the shaders
+	GLuint HDR_programID = LoadShaders("shaders/HdrVertex.vertexshader", "shaders/HdrVertex.fragmentshader");
 	GLuint quad_programID = LoadShaders("shaders/Passthrough.vertexshader", "shaders/WobblyTexture.fragmentshader");
-	GLuint texID = glGetUniformLocation(quad_programID, "renderedTexture");
-	GLuint timeID = glGetUniformLocation(quad_programID, "time");
-
+	GLuint texID = glGetUniformLocation(HDR_programID, "renderedTexture");
+	GLuint timeID = glGetUniformLocation(HDR_programID, "time");
+	// Options
+	GLboolean hdr = true; // Change with 'Space'
+	GLfloat exposure = 1.0f; // Change with Q and E
 	do {
 		check_gl_error();
 
@@ -263,13 +251,13 @@ int main(void)
 			nbFrames = 0;
 			lastTime += 1.0;
 		}
-
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// Render to our framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
+		//glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
 		// Render on the whole framebuffer, complete from the lower left corner to the upper right
-		glViewport(0, 0, g_nWidth, g_nHeight);
+		glViewport(0, 0, g_nWidth, g_nHeight); 
 
-		// Clear the screen
+													 // Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Use our shader
@@ -347,7 +335,7 @@ int main(void)
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
-
+		/*
 		// Render to the screen
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		// Render on the whole framebuffer, complete from the lower left corner to the upper right
@@ -355,7 +343,7 @@ int main(void)
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		//quad_programID
 		// Use our shader
 		glUseProgram(quad_programID);
 
@@ -365,7 +353,10 @@ int main(void)
 		// Set our "renderedTexture" sampler to user Texture Unit 0
 		glUniform1i(texID, 0);
 
-		glUniform1f(timeID, (float)(glfwGetTime()*10.0f));
+		//glUniform1i(glGetUniformLocation(HDR_programID, "hdr"), hdr);
+		//glUniform1f(glGetUniformLocation(HDR_programID, "exposure"), exposure);
+
+		//glUniform1f(timeID, (float)(glfwGetTime()*10.0f));
 
 		// 1rst attribute buffer : vertices
 		glEnableVertexAttribArray(0);
@@ -383,7 +374,7 @@ int main(void)
 		glDrawArrays(GL_TRIANGLES, 0, 6); // 2*3 indices starting at 0 -> 2 triangles
 
 		glDisableVertexAttribArray(0);
-
+		*/
 		// Draw tweak bars
 		//TwDraw();
 
