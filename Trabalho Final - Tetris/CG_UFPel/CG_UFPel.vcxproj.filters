@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\sources\controls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\sources\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\sources\objloader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\sources\quaternion_utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\sources\shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\sources\tangentspace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\sources\text2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\sources\texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\sources\vboindexer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\sources\glerror.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\sources\block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\include\controls.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\include\objloader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\include\quaternion_utils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\include\shader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\include\tangentspace.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\include\text2D.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\include\texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\include\vboindexer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\include\glerror.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\include\block.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{10AE7304-5808-3214-94DD-DC721C785143}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{01BB8FD2-492A-36D1-A261-BFDCDD6AA7AA}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

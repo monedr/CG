@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Simone\Documents\GitHub\CG\Trabalho Final - Tetris\CG_UFPel\CMakeFiles\44a47de097ed96d6d6fd4e69781e2618\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{0791B651-F818-3502-965A-1E9966107318}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
